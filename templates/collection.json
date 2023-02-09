@@ -1,0 +1,43 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "show_collection_image": true,
+        "collapse_collection_description": false,
+        "collection_image_size": "small",
+        "products_per_row": "4",
+        "default_products_per_page": 24,
+        "default_view_layout": "grid",
+        "show_quick_buy": "list",
+        "show_quick_view": "list",
+        "quick_links": "",
+        "quick_links_show_products_count": true,
+        "show_filters": false,
+        "show_filter_color_swatch": true,
+        "open_group_filters_mode": "all_closed"
+      }
+    },
+    "1654278833c9756ca6": {
+      "type": "custom-html",
+      "disabled": true,
+      "settings": {
+        "title": "Sign Waiver",
+        "html": "<p>All participants must have a signed liability waiver to participate in our rental or tour program. If you are 18 years or older, please fill out and sign for yourself. If you are under 18 years of age, please have your legal parent or guardian sign the waiver. The link may be shared via SMS, email, or messaging app.<\/p>\n<a href=\"https:\/\/waiver.smartwaiver.com\/w\/3eqhkipjjhtgaw6qp4vc5u\/preview\/?token=x87gXai94f7QtEBhAeQR8TKGSJnNrzbbRYPKac3KbPkP\">Click here to fill and sign the waiver.<\/a>\n<p>Thank you!<\/p>\n<p>The Team at Parkspass<\/p>"
+      }
+    },
+    "recently-viewed-products": {
+      "type": "recently-viewed-products",
+      "disabled": true,
+      "settings": {
+        "title": "Recently viewed",
+        "show_quick_buy": false
+      }
+    }
+  },
+  "order": [
+    "main",
+    "1654278833c9756ca6",
+    "recently-viewed-products"
+  ]
+}
