@@ -52,6 +52,12 @@
 
     {{ tracking_code }}
 
+    <div class="hidden lineitem-wrapper">
+      {% for line_item in checkout.line_items %}
+        <div class="lineitem" data-variant_id="{{ line_item.variant_id }}"></div>
+      {% endfor %}
+    </div>
+
     <script>
       var should_show_license_code = 0;
       var should_show_license_code_on_payment = 0;
@@ -73,59 +79,54 @@
       (function($) {
         $(document).on("page:load page:change", function() {          
           if (Shopify.Checkout.step === "contact_information") {
-            localStorage.removeItem("license_code");
-            fetch('/cart.js')
-            .then((response) => response.json())
-            .then((data) => {
-              data.items.forEach(item =>{            
-                if (item_list.includes(item.variant_id) == true ){
-                  should_show_license_code = 1;
-                }
-              })
-              // console.log(should_show_license_code);
-              if ( should_show_license_code == 1 ){
-                $('.step__sections').append(`
-        			<div class="section section--license-code" data-license-code="">
-                      <div class="section__header">
-                        <h2 class="section__title" style="margin-bottom:10px;">
-                          Please Enter License Plate (Required)
-                        </h2>
-                        <h4 class="section__subtitle">
-                          For verification of purchase in the park
-                        </h4>
-                      </div>
-        
-                      <div class="section__content">
-                        <div class="fieldset">
-                          <div class="field field--required license-code">
-                            <div class="field__input-wrapper">
-                              <label
-                                class="field__label field__label--visible"
-                                for="checkout_license_code"
-                                >License code</label
-                              >
-                              <input
-                                placeholder="License code"
-                                autocorrect="off"
-                                aria-describedby="tooltip-for-license-code"
-                                class="field__input"
-                                name="checkout[attributes][license_code]"
-                                aria-required="true"
-                                type="text"
-                                maxlength="10"
-                                value=""
-                                required=""
-                                id="checkout_license_code"
-                              />
-                            </div>
+            localStorage.removeItem("license_code");            
+            $( ".lineitem-wrapper .lineitem" ).each(function( index ) {
+              if (item_list.includes($(this).data("variant_id")) == true ){
+                should_show_license_code = 1;
+              }
+            });
+            // console.log(should_show_license_code);
+            if ( should_show_license_code == 1 ){
+              $('.step__sections').append(`
+                  <div class="section section--license-code" data-license-code="">
+                    <div class="section__header">
+                      <h2 class="section__title" style="margin-bottom:10px;">
+                        Please Enter License Plate (Required)
+                      </h2>
+                      <h4 class="section__subtitle">
+                        For verification of purchase in the park
+                      </h4>
+                    </div>
+      
+                    <div class="section__content">
+                      <div class="fieldset">
+                        <div class="field field--required license-code">
+                          <div class="field__input-wrapper">
+                            <label
+                              class="field__label field__label--visible"
+                              for="checkout_license_code"
+                              >License code</label
+                            >
+                            <input
+                              placeholder="License code"
+                              autocorrect="off"
+                              aria-describedby="tooltip-for-license-code"
+                              class="field__input"
+                              name="checkout[attributes][license_code]"
+                              aria-required="true"
+                              type="text"
+                              maxlength="10"
+                              value=""
+                              required=""
+                              id="checkout_license_code"
+                            />
                           </div>
                         </div>
                       </div>
                     </div>
-               `);            
-              }
-            });
-            
+                  </div>
+             `);            
+            }
             $("#continue_button").on("click", function(e) {
               if ( should_show_license_code == 1){
                 e.preventDefault();
@@ -137,29 +138,24 @@
                 }  
               }              
             });
-          }
+          }          
           if (Shopify.Checkout.step === "payment_method") {
-            fetch('/cart.js')
-            .then((response) => response.json())
-            .then((data) => {
-              data.items.forEach(item =>{
-                if (item_list.includes(item.variant_id) == true ){
-                  should_show_license_code_on_payment = 1;
-                }
-              })
-              console.log(should_show_license_code_on_payment);     
-              if ( should_show_license_code_on_payment == 1 ){
-                if (localStorage.getItem("license_code")){
-                  // console.log("yes");
-                }else{
-                  if ( window.location.href.indexOf("?") > 0 ){
-                    window.location.href = window.location.href.split("?")[0] + "?step=contact_information";
-                  }else{
-                    window.location.href = window.location.href + "?step=contact_information";
-                  }
-                }
+            $( ".lineitem-wrapper .lineitem" ).each(function( index ) {
+              if (item_list.includes($(this).data("variant_id")) == true ){
+                should_show_license_code_on_payment = 1;
               }
             });
+            if ( should_show_license_code_on_payment == 1 ){
+              if (localStorage.getItem("license_code")){
+                // console.log("yes");
+              }else{
+                if ( window.location.href.indexOf("?") > 0 ){
+                  window.location.href = window.location.href.split("?")[0] + "?step=contact_information";
+                }else{
+                  window.location.href = window.location.href + "?step=contact_information";
+                }
+              }
+            }
           }
           if (Shopify.Checkout.step === "processing"){
             localStorage.removeItem("license_code");
