@@ -12,6 +12,7 @@
 
     {{ checkout_stylesheets }}
     {{ checkout_scripts }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   </head>
   <body>
     {{ skip_to_content_link }}
@@ -50,5 +51,119 @@
     </div>
 
     {{ tracking_code }}
+
+    <script>
+      var should_show_license_code = 0;
+      var should_show_license_code_on_payment = 0;
+      var item_list = [42967706370201, 42967706402969, 42967706501273, 42967706534041, 41979162362009, 41979162394777, 41979162427545, 41979162460313, 41979162493081, 41979175665817, 
+                       41979175698585, 41979175731353, 41979175796889, 41979175829657, 41979175764121, 41979160887449, 41979160920217, 41979160952985, 41979160985753, 41979161018521, 
+                       41979161477273, 41979161542809, 41979161575577, 41979161608345, 41979161641113, 41979164000409, 41979164033177, 41979164131481, 41979164164249, 41979164065945, 
+                       41979168686233, 41979168719001, 41979168751769, 41979168784537, 41979168817305, 41979168260249, 41979168293017, 41979168325785, 41979168358553, 41979175567513, 
+                       41979175600281, 41979173142681, 41979173175449, 42968233476249, 42968233509017, 42968228397209, 42968228429977, 42968228200601, 42968228233369, 42972397142169, 
+                       42972397207705, 41979172847769, 41979172880537, 41979172651161, 41979172683929, 41979169013913, 41979169046681, 41979172618393, 41979172520089, 42972424732825, 
+                       42972424962201, 41979172192409, 41979172257945, 41979171799193, 41979171831961, 41979171864729, 41979171504281, 41979171537049, 41979171602585, 41979171635353, 
+                       41979175436441, 41979175469209, 41979175501977, 41979171405977, 41979171438745, 42972287238297, 42972287565977, 41979160527001, 41979160559769, 41979160101017, 
+                       41979160133785, 41979159838873, 41979159871641, 42968254513305, 42968254546073, 41979167375513, 41979167408281, 41979166195865, 41979166228633, 41979166064793, 
+                       41979166097561, 42968254349465, 42968254382233, 41979170226329, 41979170259097, 41979170128025, 41979170160793, 41979170029721, 41979170062489, 42972261843097, 
+                       42972261875865, 42972262105241, 42972262138009, 42972261974169, 42972262006937, 41979169865881, 41979169898649, 41824377438361, 41824377471129, 41824377503897, 
+                       41824377569433, 41979169702041, 41979169734809, 41979169177753, 41979169210521, 41979169243289, 42972110389401, 42972110422169, 42972110454937, 41824377176217, 
+                       41824377143449, 41824377208985, 41979169570969, 41979169603737, 41824377274521, 41824377307289, 41824377372825, 41979169439897, 41979169472665, 41979159478425, 
+                       41979159511193, 41979171045529, 41979171274905, 41979171307673, 42968265031833, 42968265392281, 42968265490585, 42968265064601, 42968265425049, 42968265523353, 
+                       42968265261209, 42968265293977, 42972247294105, 42972248047769, 42972247326873, 42972248080537, 42972248146073, 42972248146073, 42972148662425, 41979152695449];
+      (function($) {
+        $(document).on("page:load page:change", function() {          
+          if (Shopify.Checkout.step === "contact_information") {
+            localStorage.removeItem("license_code");
+            fetch('/cart.js')
+            .then((response) => response.json())
+            .then((data) => {
+              data.items.forEach(item =>{            
+                if (item_list.includes(item.variant_id) == true ){
+                  should_show_license_code = 1;
+                }
+              })
+              // console.log(should_show_license_code);
+              if ( should_show_license_code == 1 ){
+                $('.step__sections').append(`
+        			<div class="section section--license-code" data-license-code="">
+                      <div class="section__header">
+                        <h2 class="section__title">
+                          Please Enter License Plate (Required)
+                        </h2>
+                      </div>
+        
+                      <div class="section__content">
+                        <div class="fieldset">
+                          <div class="field field--required license-code">
+                            <div class="field__input-wrapper">
+                              <label
+                                class="field__label field__label--visible"
+                                for="checkout_license_code"
+                                >License code</label
+                              >
+                              <input
+                                placeholder="License code"
+                                autocorrect="off"
+                                aria-describedby="tooltip-for-license-code"
+                                class="field__input"
+                                name="checkout[attributes][license_code]"
+                                aria-required="true"
+                                type="text"
+                                maxlength="10"
+                                value=""
+                                required=""
+                                id="checkout_license_code"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+               `);            
+              }
+            });
+            
+            $("#continue_button").on("click", function(e) {
+              if ( should_show_license_code == 1){
+                e.preventDefault();
+                if ($("#checkout_license_code").val()) {
+                  localStorage.setItem("license_code", $("#checkout_license_code").val());
+                  $(this).closest("form").submit();
+                } else {
+                  alert("form submit is prevented, please add the license code");
+                }  
+              }              
+            });
+          }
+          if (Shopify.Checkout.step === "payment_method") {
+            fetch('/cart.js')
+            .then((response) => response.json())
+            .then((data) => {
+              data.items.forEach(item =>{
+                if (item_list.includes(item.variant_id) == true ){
+                  should_show_license_code_on_payment = 1;
+                }
+              })
+              console.log(should_show_license_code_on_payment);     
+              if ( should_show_license_code_on_payment == 1 ){
+                if (localStorage.getItem("license_code")){
+                  // console.log("yes");
+                }else{
+                  if ( window.location.href.indexOf("?") > 0 ){
+                    window.location.href = window.location.href.split("?")[0] + "?step=contact_information";
+                  }else{
+                    window.location.href = window.location.href + "?step=contact_information";
+                  }
+                }
+              }
+            });
+          }
+          if (Shopify.Checkout.step === "processing"){
+            localStorage.removeItem("license_code");
+          }
+        });
+      })(Checkout.$);
+    </script>
+    
   </body>
 </html>
